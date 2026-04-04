@@ -1,0 +1,74 @@
+Decision Tree Rules — Real-World Dataset
+F1=0.8511 | Accuracy=85.18% | Depth=8 | Leaves=84
+=======================================================
+
+|--- ph_x_turb <= 5.14
+|   |--- turbidity <= 0.81
+|   |   |--- ph_x_turb <= 0.32
+|   |   |   |--- temperature <= 29.49
+|   |   |   |   |--- ph_deviation <= 0.85
+|   |   |   |   |   |--- truncated branch of depth 4
+|   |   |   |   |--- ph_deviation >  0.85
+|   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |--- temperature >  29.49
+|   |   |   |   |--- temperature <= 31.95
+|   |   |   |   |   |--- truncated branch of depth 4
+|   |   |   |   |--- temperature >  31.95
+|   |   |   |   |   |--- truncated branch of depth 2
+|   |   |--- ph_x_turb >  0.32
+|   |   |   |--- ph_x_turb <= 0.40
+|   |   |   |   |--- temp_deviation <= 5.39
+|   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |   |--- temp_deviation >  5.39
+|   |   |   |   |   |--- truncated branch of depth 4
+|   |   |   |--- ph_x_turb >  0.40
+|   |   |   |   |--- temperature <= 25.78
+|   |   |   |   |   |--- class: 1
+|   |   |   |   |--- temperature >  25.78
+|   |   |   |   |   |--- class: 1
+|   |--- turbidity >  0.81
+|   |   |--- turb_log <= 1.62
+|   |   |   |--- turbidity <= 2.76
+|   |   |   |   |--- turbidity <= 0.86
+|   |   |   |   |   |--- truncated branch of depth 4
+|   |   |   |   |--- turbidity >  0.86
+|   |   |   |   |   |--- truncated branch of depth 4
+|   |   |   |--- turbidity >  2.76
+|   |   |   |   |--- ph_sq <= 50.01
+|   |   |   |   |   |--- truncated branch of depth 4
+|   |   |   |   |--- ph_sq >  50.01
+|   |   |   |   |   |--- truncated branch of depth 4
+|   |   |--- turb_log >  1.62
+|   |   |   |--- turbidity <= 13.56
+|   |   |   |   |--- ph_sq <= 55.76
+|   |   |   |   |   |--- truncated branch of depth 4
+|   |   |   |   |--- ph_sq >  55.76
+|   |   |   |   |   |--- truncated branch of depth 4
+|   |   |   |--- turbidity >  13.56
+|   |   |   |   |--- temperature <= 38.15
+|   |   |   |   |   |--- truncated branch of depth 4
+|   |   |   |   |--- temperature >  38.15
+|   |   |   |   |   |--- class: 3
+|--- ph_x_turb >  5.14
+|   |--- ph_x_turb <= 5.71
+|   |   |--- ph_sq <= 27.89
+|   |   |   |--- turbidity <= 15.69
+|   |   |   |   |--- temperature <= 32.05
+|   |   |   |   |   |--- class: 3
+|   |   |   |   |--- temperature >  32.05
+|   |   |   |   |   |--- class: 3
+|   |   |   |--- turbidity >  15.69
+|   |   |   |   |--- temp_deviation <= 10.48
+|   |   |   |   |   |--- class: 4
+|   |   |   |   |--- temp_deviation >  10.48
+|   |   |   |   |   |--- class: 3
+|   |   |--- ph_sq >  27.89
+|   |   |   |--- class: 3
+|   |--- ph_x_turb >  5.71
+|   |   |--- ph_x_turb <= 6.14
+|   |   |   |--- ph_x_turb <= 6.04
+|   |   |   |   |--- class: 3
+|   |   |   |--- ph_x_turb >  6.04
+|   |   |   |   |--- class: 3
+|   |   |--- ph_x_turb >  6.14
+|   |   |   |--- class: 3

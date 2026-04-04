@@ -1,0 +1,56 @@
+{
+  "model_name": "SVM (RBF)",
+  "model_version": "2.0.0",
+  "features": [
+    "ph",
+    "turbidity",
+    "temperature",
+    "ph_deviation",
+    "ph_sq",
+    "turb_log",
+    "temp_deviation",
+    "ph_x_turb"
+  ],
+  "raw_features": [
+    "ph",
+    "turbidity",
+    "temperature"
+  ],
+  "classes": [
+    "Excellent",
+    "Good",
+    "Poor",
+    "Unsafe",
+    "Very Poor"
+  ],
+  "wqi_map": {
+    "Excellent": [
+      90,
+      100
+    ],
+    "Good": [
+      70,
+      89
+    ],
+    "Poor": [
+      50,
+      69
+    ],
+    "Very Poor": [
+      25,
+      49
+    ],
+    "Unsafe": [
+      0,
+      24
+    ]
+  },
+  "uses_scaling": true,
+  "cv_f1_mean": 0.931,
+  "cv_f1_std": 0.0056,
+  "test_accuracy": 0.9223,
+  "test_f1": 0.9227,
+  "n_train": 7520,
+  "n_test": 1880,
+  "trained_at": "2026-04-04T12:42:13.298201"
+}

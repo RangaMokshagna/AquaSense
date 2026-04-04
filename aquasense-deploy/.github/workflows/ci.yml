@@ -1,0 +1,83 @@
+name: AquaSense CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Test ML Service ──────────────────────────────────────
+  test-ml:
+    name: Python ML Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: aquasense-ml
+        run: pip install -r requirements.txt
+
+      - name: Train model
+        working-directory: aquasense-ml
+        run: python train.py
+
+      - name: Run tests
+        working-directory: aquasense-ml
+        run: pytest tests/ -v
+
+  # ── Test Backend ─────────────────────────────────────────
+  test-backend:
+    name: Node.js Backend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: aquasense-backend
+        run: npm ci
+
+      - name: Run tests
+        working-directory: aquasense-backend
+        run: npm test
+
+  # ── Build Dashboard ──────────────────────────────────────
+  build-dashboard:
+    name: React Dashboard Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: aquasense-dashboard
+        run: npm ci
+
+      - name: Build
+        working-directory: aquasense-dashboard
+        run: npm run build
+
+  # ── Docker build check ───────────────────────────────────
+  docker-check:
+    name: Docker Compose Validation
+    runs-on: ubuntu-latest
+    needs: [test-ml, test-backend, build-dashboard]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docker-compose
+        run: docker compose config

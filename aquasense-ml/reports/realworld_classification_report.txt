@@ -1,0 +1,14 @@
+Dataset: Real-world based (8500 rows)
+Best model: Random Forest
+
+              precision    recall  f1-score   support
+
+   Excellent     0.9239    0.9647    0.9439       340
+        Good     0.8681    0.9115    0.8893       520
+        Poor     0.8472    0.8175    0.8321       400
+      Unsafe     0.9817    0.9773    0.9795       220
+   Very Poor     0.7010    0.6182    0.6570       220
+
+    accuracy                         0.8706      1700
+   macro avg     0.8644    0.8578    0.8604      1700
+weighted avg     0.8674    0.8706    0.8684      1700

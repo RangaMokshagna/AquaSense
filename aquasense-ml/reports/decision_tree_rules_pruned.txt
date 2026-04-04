@@ -1,0 +1,168 @@
+Decision Tree Rules — Decision Tree (pruned)
+Test F1: 0.9102  |  Accuracy: 91.01%  |  CV F1: 0.9192 ± 0.0077
+Max depth: 8  |  Nodes: 239  |  Leaves: 120
+============================================================
+
+|--- turb_log <= 1.43
+|   |--- turbidity <= 0.96
+|   |   |--- ph_deviation <= 0.67
+|   |   |   |--- temp_deviation <= 6.21
+|   |   |   |   |--- ph_x_turb <= 0.35
+|   |   |   |   |   |--- turb_log <= 0.60
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- turb_log >  0.60
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |--- ph_x_turb >  0.35
+|   |   |   |   |   |--- turbidity <= 0.88
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- turbidity >  0.88
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |--- temp_deviation >  6.21
+|   |   |   |   |--- turbidity <= 0.79
+|   |   |   |   |   |--- ph_sq <= 50.69
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- ph_sq >  50.69
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |--- turbidity >  0.79
+|   |   |   |   |   |--- class: 1
+|   |   |--- ph_deviation >  0.67
+|   |   |   |--- ph_sq <= 47.28
+|   |   |   |   |--- class: 2
+|   |   |   |--- ph_sq >  47.28
+|   |   |   |   |--- ph_x_turb <= 0.40
+|   |   |   |   |   |--- temp_deviation <= 2.73
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- temp_deviation >  2.73
+|   |   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |   |--- ph_x_turb >  0.40
+|   |   |   |   |   |--- ph_deviation <= 1.40
+|   |   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |   |   |--- ph_deviation >  1.40
+|   |   |   |   |   |   |--- class: 1
+|   |--- turbidity >  0.96
+|   |   |--- ph_sq <= 41.94
+|   |   |   |--- ph_x_turb <= 0.75
+|   |   |   |   |--- temperature <= 28.41
+|   |   |   |   |   |--- ph_deviation <= 0.68
+|   |   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |   |   |--- ph_deviation >  0.68
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |--- temperature >  28.41
+|   |   |   |   |   |--- class: 2
+|   |   |   |--- ph_x_turb >  0.75
+|   |   |   |   |--- temperature <= 34.36
+|   |   |   |   |   |--- ph_x_turb <= 1.00
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- ph_x_turb >  1.00
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |--- temperature >  34.36
+|   |   |   |   |   |--- ph_x_turb <= 1.31
+|   |   |   |   |   |   |--- class: 2
+|   |   |   |   |   |--- ph_x_turb >  1.31
+|   |   |   |   |   |   |--- truncated branch of depth 2
+|   |   |--- ph_sq >  41.94
+|   |   |   |--- turb_log <= 0.77
+|   |   |   |   |--- ph_x_turb <= 0.42
+|   |   |   |   |   |--- temp_deviation <= 4.12
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- temp_deviation >  4.12
+|   |   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |   |--- ph_x_turb >  0.42
+|   |   |   |   |   |--- ph_x_turb <= 0.45
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- ph_x_turb >  0.45
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |--- turb_log >  0.77
+|   |   |   |   |--- ph_sq <= 46.21
+|   |   |   |   |   |--- turbidity <= 2.63
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- turbidity >  2.63
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |--- ph_sq >  46.21
+|   |   |   |   |   |--- ph_x_turb <= 0.35
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- ph_x_turb >  0.35
+|   |   |   |   |   |   |--- class: 1
+|--- turb_log >  1.43
+|   |--- ph_x_turb <= 6.47
+|   |   |--- turb_log <= 2.22
+|   |   |   |--- ph_x_turb <= 3.28
+|   |   |   |   |--- ph <= 7.46
+|   |   |   |   |   |--- turbidity <= 7.15
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- turbidity >  7.15
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |--- ph >  7.46
+|   |   |   |   |   |--- turb_log <= 1.58
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- turb_log >  1.58
+|   |   |   |   |   |   |--- class: 2
+|   |   |   |--- ph_x_turb >  3.28
+|   |   |   |   |--- temperature <= 30.29
+|   |   |   |   |   |--- turb_log <= 2.12
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- turb_log >  2.12
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |--- temperature >  30.29
+|   |   |   |   |   |--- ph_sq <= 24.59
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- ph_sq >  24.59
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |--- turb_log >  2.22
+|   |   |   |--- turbidity <= 18.92
+|   |   |   |   |--- turb_log <= 2.34
+|   |   |   |   |   |--- ph_sq <= 32.91
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- ph_sq >  32.91
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |--- turb_log >  2.34
+|   |   |   |   |   |--- ph_sq <= 67.20
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- ph_sq >  67.20
+|   |   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |--- turbidity >  18.92
+|   |   |   |   |--- turb_log <= 3.13
+|   |   |   |   |   |--- turbidity <= 20.14
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |   |--- turbidity >  20.14
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |--- turb_log >  3.13
+|   |   |   |   |   |--- turbidity <= 24.29
+|   |   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |   |   |--- turbidity >  24.29
+|   |   |   |   |   |   |--- truncated branch of depth 2
+|   |--- ph_x_turb >  6.47
+|   |   |--- turbidity <= 18.14
+|   |   |   |--- ph_sq <= 22.49
+|   |   |   |   |--- ph_x_turb <= 7.91
+|   |   |   |   |   |--- ph <= 3.81
+|   |   |   |   |   |   |--- class: 3
+|   |   |   |   |   |--- ph >  3.81
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |   |--- ph_x_turb >  7.91
+|   |   |   |   |   |--- ph_sq <= 11.20
+|   |   |   |   |   |   |--- class: 3
+|   |   |   |   |   |--- ph_sq >  11.20
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |--- ph_sq >  22.49
+|   |   |   |   |--- temperature <= 19.57
+|   |   |   |   |   |--- class: 3
+|   |   |   |   |--- temperature >  19.57
+|   |   |   |   |   |--- class: 3
+|   |   |--- turbidity >  18.14
+|   |   |   |--- turbidity <= 21.07
+|   |   |   |   |--- ph_deviation <= 2.31
+|   |   |   |   |   |--- class: 3
+|   |   |   |   |--- ph_deviation >  2.31
+|   |   |   |   |   |--- turb_log <= 3.05
+|   |   |   |   |   |   |--- class: 3
+|   |   |   |   |   |--- turb_log >  3.05
+|   |   |   |   |   |   |--- truncated branch of depth 3
+|   |   |   |--- turbidity >  21.07
+|   |   |   |   |--- ph_x_turb <= 7.43
+|   |   |   |   |   |--- ph <= 4.75
+|   |   |   |   |   |   |--- class: 3
+|   |   |   |   |   |--- ph >  4.75
+|   |   |   |   |   |   |--- class: 3
+|   |   |   |   |--- ph_x_turb >  7.43
+|   |   |   |   |   |--- class: 3

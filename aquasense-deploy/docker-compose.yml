@@ -1,0 +1,79 @@
+services:
+
+  mongodb:
+    image: mongo:7
+    container_name: aquasense-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./aquasense-backend/scripts/mongo-init.js:/docker-entrypoint-initdb.d/init.js:ro
+    environment:
+      MONGO_INITDB_DATABASE: aquasense
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  ml-service:
+    build:
+      context: ../aquasense-ml
+      dockerfile: Dockerfile
+    container_name: aquasense-ml
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  backend:
+    build:
+      context: ../aquasense-backend
+      dockerfile: Dockerfile
+    container_name: aquasense-backend
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      ml-service:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb://mongodb:27017/aquasense
+      ML_SERVICE_URL: http://ml-service:8000
+      API_KEY: ${API_KEY:-changeme}
+      FRONTEND_URL: http://localhost:3000
+    volumes:
+      - backend_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  dashboard:
+    build:
+      context: ../aquasense-dashboard
+      dockerfile: Dockerfile
+    container_name: aquasense-dashboard
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+
+volumes:
+  mongo_data:
+  backend_logs:

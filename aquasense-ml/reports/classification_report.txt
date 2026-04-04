@@ -1,0 +1,13 @@
+Best model: SVM (RBF)
+
+              precision    recall  f1-score   support
+
+   Excellent     0.9049    0.9750    0.9386       400
+        Good     0.9639    0.9080    0.9351       500
+        Poor     0.9107    0.9175    0.9141       400
+      Unsafe     0.9885    0.9179    0.9519       280
+   Very Poor     0.8444    0.8867    0.8650       300
+
+    accuracy                         0.9223      1880
+   macro avg     0.9225    0.9210    0.9209      1880
+weighted avg     0.9246    0.9223    0.9227      1880

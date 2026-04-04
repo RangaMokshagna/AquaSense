@@ -1,0 +1,13 @@
+services:
+  ml-service:
+    build: .
+    container_name: aquasense-ml
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
