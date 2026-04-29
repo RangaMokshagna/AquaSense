@@ -1,5 +1,5 @@
 {
-  "model_name": "SVM (RBF)",
+  "model_name": "Decision Tree (pruned)",
   "model_version": "2.0.0",
   "features": [
     "ph",
@@ -45,12 +45,12 @@
       24
     ]
   },
-  "uses_scaling": true,
-  "cv_f1_mean": 0.931,
-  "cv_f1_std": 0.0056,
-  "test_accuracy": 0.9223,
-  "test_f1": 0.9227,
-  "n_train": 7520,
-  "n_test": 1880,
-  "trained_at": "2026-04-04T12:42:13.298201"
+  "uses_scaling": false,
+  "cv_f1_mean": 0.9987,
+  "cv_f1_std": 0.0005,
+  "test_accuracy": 0.9979,
+  "test_f1": 0.9979,
+  "n_train": 24882,
+  "n_test": 6221,
+  "trained_at": "2026-04-22T16:43:53.578714"
 }

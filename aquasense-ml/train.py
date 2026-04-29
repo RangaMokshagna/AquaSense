@@ -16,6 +16,7 @@ Run: python train.py
 """
 
 import json
+import os
 import time
 import warnings
 from pathlib import Path
@@ -49,6 +50,11 @@ MODELS_DIR  = Path("models")
 MODELS_DIR.mkdir(exist_ok=True)
 REPORTS_DIR = Path("reports")
 REPORTS_DIR.mkdir(exist_ok=True)
+STALE_REPORTS = [
+    "realworld_classification_report.txt",
+    "realworld_confusion_matrix.png",
+    "realworld_dt_rules.txt",
+]
 
 # ── Label ordering (used for WQI mapping) ─────────────────────────────────
 QUALITY_ORDER = ["Excellent", "Good", "Poor", "Very Poor", "Unsafe"]
@@ -61,6 +67,8 @@ WQI_MAP = {
 }
 
 FEATURES = ["ph", "turbidity", "temperature"]
+TRAIN_N_JOBS = int(os.getenv("AQUASENSE_TRAIN_N_JOBS", "1"))
+CV_N_JOBS = int(os.getenv("AQUASENSE_CV_N_JOBS", "1"))
 
 # ── Helper: WQI score from class + raw sensor values ──────────────────────
 def compute_wqi(quality_class: str, ph: float, turbidity: float, temperature: float) -> float:
@@ -86,6 +94,12 @@ def compute_wqi(quality_class: str, ph: float, turbidity: float, temperature: fl
 print("=" * 60)
 print("  AquaSense ML Training Pipeline")
 print("=" * 60)
+
+for stale_name in STALE_REPORTS:
+    stale_path = REPORTS_DIR / stale_name
+    if stale_path.exists():
+        stale_path.unlink()
+        print(f"[Cleanup] Removed stale report -> {stale_path}")
 
 if not DATA_PATH.exists():
     print("Dataset not found — generating...")
@@ -115,7 +129,8 @@ print(f"  Total features:    {len(ALL_FEATURES)}")
 
 # ── 3. Encode labels ───────────────────────────────────────────────────────
 le = LabelEncoder()
-le.fit(QUALITY_ORDER)
+present_classes = [label for label in QUALITY_ORDER if label in set(df["quality"])]
+le.fit(present_classes)
 df["label"] = le.transform(df["quality"])
 
 X = df[ALL_FEATURES].values
@@ -140,7 +155,7 @@ models = {
         min_samples_leaf=2,
         class_weight="balanced",
         random_state=42,
-        n_jobs=-1,
+        n_jobs=TRAIN_N_JOBS,
     ),
     "Gradient Boosting": GradientBoostingClassifier(
         n_estimators=150,
@@ -158,7 +173,7 @@ models = {
         use_label_encoder=False,
         eval_metric="mlogloss",
         random_state=42,
-        n_jobs=-1,
+        n_jobs=TRAIN_N_JOBS,
         verbosity=0,
     ),
     "Decision Tree": DecisionTreeClassifier(
@@ -190,6 +205,7 @@ results = {}
 print("\n[Training] Comparing models...\n")
 print(f"  {'Model':<22} {'CV F1 (mean±std)':<22} {'Test Acc':<12} {'Test F1':<12} {'Time'}")
 print("  " + "-" * 75)
+print(f"  Parallel jobs: train={TRAIN_N_JOBS}, cv={CV_N_JOBS}")
 
 for name, model in models.items():
     t0 = time.time()
@@ -200,7 +216,7 @@ for name, model in models.items():
     use_X       = scaler.transform(X) if "SVM" in name else X
 
     # 5-fold CV on full data
-    cv_scores = cross_val_score(model, use_X, y, cv=cv, scoring="f1_weighted", n_jobs=-1)
+    cv_scores = cross_val_score(model, use_X, y, cv=cv, scoring="f1_weighted", n_jobs=CV_N_JOBS)
     model.fit(use_X_train, y_train)
     y_pred = model.predict(use_X_test)
 
@@ -222,9 +238,13 @@ for name, model in models.items():
           f"{acc:.4f}       {f1:.4f}       {elapsed:.1f}s")
 
 # ── 8. Pick the best model ─────────────────────────────────────────────────
-best_name = max(results, key=lambda k: results[k]["test_f1"])
+best_name = "Decision Tree (pruned)"
 best      = results[best_name]
-print(f"\n[Winner] {best_name}  (Test F1 = {best['test_f1']:.4f})")
+print(f"\n[Selected] Decision Tree (pruned) — chosen for explainability")
+print(f"  F1 = {best['test_f1']:.4f} | Accuracy = {best['test_acc']*100:.2f}%")
+print(f"  Depth = {best['model'].get_depth()} | Leaves = {best['model'].get_n_leaves()}")
+print(f"  Note: Random Forest F1 = {results['Random Forest']['test_f1']:.4f}")
+print(f"  Difference = {(results['Random Forest']['test_f1'] - best['test_f1'])*100:.3f}%")
 
 # ── 9. Full classification report ────────────────────────────────────────
 print(f"\n[Report] {best_name} — detailed metrics:\n")
@@ -255,7 +275,7 @@ plt.tight_layout()
 cm_path = REPORTS_DIR / "confusion_matrix.png"
 fig.savefig(cm_path, dpi=120)
 plt.close()
-print(f"[Plot] Confusion matrix saved → {cm_path}")
+print(f"[Plot] Confusion matrix saved -> {cm_path}")
 
 # ── 11. Feature importance (tree-based only) ──────────────────────────────
 best_model = best["model"]
@@ -273,7 +293,7 @@ if hasattr(best_model, "feature_importances_"):
     fi_path = REPORTS_DIR / "feature_importance.png"
     fig.savefig(fi_path, dpi=120)
     plt.close()
-    print(f"[Plot] Feature importance saved → {fi_path}")
+    print(f"[Plot] Feature importance saved -> {fi_path}")
     print(f"\n[Importance]\n{importances.round(4).to_string()}")
 
 
@@ -289,7 +309,7 @@ for dt_name in ["Decision Tree", "Decision Tree (pruned)"]:
     rules = export_text(dt_model, feature_names=ALL_FEATURES, max_depth=5)
     rules_path = REPORTS_DIR / f"decision_tree_rules_{'pruned' if 'pruned' in dt_name else 'full'}.txt"
     header = (
-        f"Decision Tree Rules — {dt_name}\n"
+        f"Decision Tree Rules - {dt_name}\n"
         f"Test F1: {dt_result['test_f1']:.4f}  |  "
         f"Accuracy: {dt_result['test_acc']*100:.2f}%  |  "
         f"CV F1: {dt_result['cv_mean']:.4f} ± {dt_result['cv_std']:.4f}\n"
@@ -299,7 +319,13 @@ for dt_name in ["Decision Tree", "Decision Tree (pruned)"]:
         f"{'='*60}\n\n"
     )
     rules_path.write_text(header + rules)
-    print(f"[DT]  Rules saved → {rules_path}")
+    print(f"[DT]  Rules saved -> {rules_path}")
+
+    # The selected model already gets the generic confusion matrix and
+    # feature-importance outputs, so skip duplicate DT-specific images.
+    if dt_name == best_name:
+        print(f"[DT]  Skipping duplicate plots for selected model -> {dt_name}")
+        continue
 
     # Decision Tree feature importance bar chart
     imp = pd.Series(dt_model.feature_importances_, index=ALL_FEATURES).sort_values(ascending=False)
@@ -314,7 +340,7 @@ for dt_name in ["Decision Tree", "Decision Tree (pruned)"]:
     tag = "pruned" if "pruned" in dt_name else "full"
     fig.savefig(REPORTS_DIR / f"dt_feature_importance_{tag}.png", dpi=120)
     plt.close()
-    print(f"[DT]  Feature importance saved → reports/dt_feature_importance_{tag}.png")
+    print(f"[DT]  Feature importance saved -> reports/dt_feature_importance_{tag}.png")
 
     # Confusion matrix for this DT
     dt_cm = confusion_matrix(y_test, dt_result["y_pred"])
@@ -327,7 +353,7 @@ for dt_name in ["Decision Tree", "Decision Tree (pruned)"]:
     plt.tight_layout()
     fig.savefig(REPORTS_DIR / f"dt_confusion_matrix_{tag}.png", dpi=120)
     plt.close()
-    print(f"[DT]  Confusion matrix saved → reports/dt_confusion_matrix_{tag}.png")
+    print(f"[DT]  Confusion matrix saved -> reports/dt_confusion_matrix_{tag}.png")
 
     print(f"[DT]  {dt_name}: F1={dt_result['test_f1']:.4f} | "
           f"Accuracy={dt_result['test_acc']*100:.2f}% | "
@@ -337,7 +363,7 @@ for dt_name in ["Decision Tree", "Decision Tree (pruned)"]:
 print(f"\n[Comparison] All models ranked by Test F1:")
 ranked = sorted(results.items(), key=lambda x: x[1]["test_f1"], reverse=True)
 for i, (name, r) in enumerate(ranked):
-    marker = " ← WINNER" if i == 0 else ""
+    marker = " <- WINNER" if i == 0 else ""
     print(f"  {i+1}. {name:<28} F1={r['test_f1']:.4f}  Acc={r['test_acc']*100:.2f}%{marker}")
 
 
@@ -372,10 +398,10 @@ meta = {
 meta_path.write_text(json.dumps(meta, indent=2))
 
 print(f"\n[Saved]")
-print(f"  Model   → {model_path}")
-print(f"  Scaler  → {scaler_path}")
-print(f"  Encoder → {le_path}")
-print(f"  Meta    → {meta_path}")
+print(f"  Model   -> {model_path}")
+print(f"  Scaler  -> {scaler_path}")
+print(f"  Encoder -> {le_path}")
+print(f"  Meta    -> {meta_path}")
 print(f"\n{'=' * 60}")
 print(f"  Training complete! Best: {best_name}  F1={best['test_f1']:.4f}")
 print(f"{'=' * 60}\n")

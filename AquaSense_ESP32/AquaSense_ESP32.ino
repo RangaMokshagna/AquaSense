@@ -22,12 +22,13 @@
 // ═══════════════════════════════════════════════════
 //   STEP 1: Edit these settings before uploading
 // ═══════════════════════════════════════════════════
-
-#define WIFI_SSID      "vivo X200"        // Your WiFi name
-#define WIFI_PASSWORD  "12345678"         // Your WiFi password
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
+#define WIFI_SSID      "vivo X200"         // Exact 2.4 GHz WiFi/hotspot name
+#define WIFI_PASSWORD  "********"         // Exact WiFi/hotspot password
 
 // Run ipconfig in PowerShell → find IPv4 Address under WiFi adapter
-#define BACKEND_IP     "192.168.1.59"     // ← your PC's IP address
+#define BACKEND_IP     "10.150.241.1"     // ← your PC's IP address
 #define BACKEND_PORT   5000
 
 #define API_KEY        "changeme"
@@ -74,6 +75,7 @@ float phSlope = (7.0 - 4.0) / (PH_VOLTAGE_AT_4 - PH_VOLTAGE_AT_7);
 
 // ─────────────────────────────────────────────────
 void setup() {
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // disable brownout
   Serial.begin(115200);
   delay(500);
 
@@ -208,26 +210,68 @@ float readPH() {
 // ─────────────────────────────────────────────────
 // Connect to WiFi with clean reconnect
 // ─────────────────────────────────────────────────
+const char* wifiStatusName(wl_status_t status) {
+  switch (status) {
+    case WL_IDLE_STATUS:
+      return "idle";
+    case WL_NO_SSID_AVAIL:
+      return "ssid not found";
+    case WL_SCAN_COMPLETED:
+      return "scan completed";
+    case WL_CONNECTED:
+      return "connected";
+    case WL_CONNECT_FAILED:
+      return "connect failed / wrong password";
+    case WL_CONNECTION_LOST:
+      return "connection lost";
+    case WL_DISCONNECTED:
+      return "disconnected";
+    default:
+      return "unknown";
+  }
+}
+
 void connectWiFi() {
-  WiFi.disconnect(true);
-  delay(1000);
+  WiFi.mode(WIFI_STA);
+  WiFi.setSleep(false);
+  WiFi.disconnect(false, true);
+  delay(500);
+
+  Serial.printf("[WiFi]  Scanning for %s...\n", WIFI_SSID);
+  int networkCount = WiFi.scanNetworks(false, true);
+  bool foundNetwork = false;
+
+  for (int i = 0; i < networkCount; i++) {
+    if (WiFi.SSID(i) == WIFI_SSID) {
+      foundNetwork = true;
+      Serial.printf("[WiFi]  Found %s  RSSI: %d dBm  Channel: %d  Encryption: %d\n",
+                    WIFI_SSID, WiFi.RSSI(i), WiFi.channel(i), WiFi.encryptionType(i));
+      break;
+    }
+  }
+
+  WiFi.scanDelete();
+
+  if (!foundNetwork) {
+    Serial.println("[WiFi]  Network not found. Check SSID, hotspot visibility, and 2.4 GHz mode.");
+  }
 
   Serial.printf("[WiFi]  Connecting to %s", WIFI_SSID);
-  WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-  int tries = 0;
-  while (WiFi.status() != WL_CONNECTED && tries < 30) {
+  unsigned long startedAt = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - startedAt < 20000UL) {
     delay(500);
     Serial.print(".");
-    tries++;
   }
 
   if (WiFi.status() == WL_CONNECTED) {
     Serial.printf(" OK\n[WiFi]  IP: %s  RSSI: %d dBm\n",
                   WiFi.localIP().toString().c_str(), WiFi.RSSI());
   } else {
-    Serial.println(" FAILED (will retry on next loop)");
+    wl_status_t status = WiFi.status();
+    Serial.printf(" FAILED\n[WiFi]  Status: %d (%s)\n", status, wifiStatusName(status));
+    Serial.println("[WiFi]  Tip: ESP32 needs a 2.4 GHz WiFi/hotspot and the exact password.");
   }
 }
 
@@ -278,4 +322,4 @@ void sendReading(float ph, float turbidity, float temperature) {
   }
 
   http.end();
-}
+} 
