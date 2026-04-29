@@ -7,7 +7,7 @@
 
 ## Project Demo
 
-![AquaSense Dashboard](https://raw.githubusercontent.com/RangaMokshagna/AquaSense/main/docs/dashboard.png)
+![AquaSense Dashboard](https://raw.githubusercontent.com/RangaMokshagna/AquaSense/main/dashboard.png)
 
 > Live Dashboard showing real-time sensor readings, WQI score, and quality classification
 
