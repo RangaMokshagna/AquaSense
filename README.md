@@ -7,7 +7,7 @@
 
 ## Project Demo
 
-![AquaSense Dashboard](https://raw.githubusercontent.com/YOUR_USERNAME/aquasense/main/docs/dashboard.png)
+![AquaSense Dashboard](https://raw.githubusercontent.com/RangaMokshagna/AquaSense/main/docs/dashboard.png)
 
 > Live Dashboard showing real-time sensor readings, WQI score, and quality classification
 
@@ -526,34 +526,15 @@ This project contributes to:
 
 ## Team
 
-| Name | Role |
-|---|---|
-| K. Darshan Sai | IoT Firmware + Backend API |
-| [Member 2] | ML Model + Training Pipeline |
-| [Member 3] | React Dashboard + UI |
+| Name |
+|---|
+| K. Darshan Sai | 
+| J. Ranga Mokshagna | 
+| P. Bharat Sai | 
 
-**Project Guide:** [Guide Name]
 **Institution:** SRM Institute of Science and Technology, Kattankulathur
-**Department:** Computational Intelligence
+**Department:** Department of Data Science And Business Systems
 **Academic Year:** 2025–2026
-
----
-
-## License
-
-MIT License — free to use for academic and personal projects.
-
----
-
-## Citation
-
-If you use this project in your research:
-
-```
-K. Darshan Sai et al., "AquaSense: Real-Time Water Quality Monitoring
-and Prediction Using Decision Tree Machine Learning with IoT Sensor
-Integration," SRM Institute of Science and Technology, 2026.
-```
 
 ---
 
