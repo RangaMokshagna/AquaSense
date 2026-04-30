@@ -246,7 +246,7 @@ aquasense/
 ### Option A — Docker (Recommended — All 4 services with one command)
 
 ```bash
-git clone https://github.com/RangaMokshagna/aquasense.git
+git clone https://github.com/RangaMokshagna/AquaSense.git
 cd aquasense/aquasense-deploy
 
 cp .env.example .env
