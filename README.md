@@ -247,7 +247,7 @@ aquasense/
 
 ```bash
 git clone https://github.com/RangaMokshagna/AquaSense.git
-cd aquasense/aquasense-deploy
+cd AquaSense/aquasense-deploy
 
 cp .env.example .env
 docker compose up --build -d
