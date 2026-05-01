@@ -524,7 +524,7 @@ This project contributes to:
 
 ---
 
-## 👥 Team Contributions
+## Team 
 
 | Name |
 |---|
