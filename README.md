@@ -15,7 +15,7 @@
 
 ## What is AquaSense?
 
-AquaSense is a complete end-to-end IoT and Machine Learning system for water quality monitoring. Three physical sensors — pH, turbidity, and temperature — are connected to an ESP32 microcontroller that reads and transmits data every 5 seconds over WiFi. A Node.js backend receives the data, a Python FastAPI ML service classifies the water quality, and a React dashboard shows everything live.
+AquaSense is a complete end-to-end IoT and Machine Learning system for water quality monitoring. Three physical sensors - pH, turbidity, and temperature - are connected to an ESP32 microcontroller that reads and transmits data every 5 seconds over WiFi. A Node.js backend receives the data, a Python FastAPI ML service classifies the water quality, and a React dashboard shows everything live.
 
 The system classifies water into five WHO-standard quality classes — Excellent, Good, Poor, Very Poor, and Unsafe — using a pruned Decision Tree model with depth 8 and 17 leaves, achieving 99.79% F1 score on 31,103 real water quality samples.
 
